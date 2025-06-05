@@ -19,6 +19,17 @@
 #include "graph_layout/graph_layout.h"
 using namespace graph_layout;
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >=  6
+typedef FVector2f FCompatibleVector2;
+typedef FDeprecateSlateVector2D FCompatibleDeprecateSlateVector2D;
+#else
+typedef FVector2D FCompatibleVector2;
+typedef FVector2D FCompatibleDeprecateSlateVector2D;
+#endif
+static inline FCompatibleVector2 CompatibleVector2(FVector2D const& V)
+{
+	return FCompatibleVector2((float)V.X, (float)V.Y);
+}
 #define GRAPH_FORMATTER_HACK
 
 /** Hack start. Access to private member legally. */
@@ -26,7 +37,7 @@ using namespace graph_layout;
 #include "PrivateAccessor.h"
 
 DECLARE_PRIVATE_MEMBER_ACCESSOR(FAccess_SGraphPanel_ZoomLevels, SNodePanel, TUniquePtr<FZoomLevelsContainer>, ZoomLevels)
-DECLARE_PRIVATE_MEMBER_ACCESSOR(FAccess_SGraphNodeResizable_UserSize, SGraphNodeResizable, FVector2D, UserSize);
+DECLARE_PRIVATE_MEMBER_ACCESSOR(FAccess_SGraphNodeResizable_UserSize, SGraphNodeResizable, FCompatibleDeprecateSlateVector2D, UserSize);
 DECLARE_PRIVATE_MEMBER_ACCESSOR(FAccess_SNodePanel_CurrentLOD, SNodePanel, EGraphRenderingLOD::Type, CurrentLOD);
 
 static TUniquePtr<FZoomLevelsContainer> TopZoomLevels;
@@ -325,7 +336,7 @@ void FFormatter::Translate(TSet<UEdGraphNode*> Nodes, FVector2D Offset) const
     {
         auto WidgetNode = GetWidget(Node);
         SGraphPanel::SNode::FNodeSet Filter;
-        WidgetNode->MoveTo(WidgetNode->GetPosition() + Offset, Filter, true);
+        WidgetNode->MoveTo(CompatibleVector2(WidgetNode->GetPosition() + Offset) , Filter, true);
     }
 }
 
@@ -558,7 +569,7 @@ void FFormatter::Format()
         UEdGraphNode* UEdNode = static_cast<UEdGraphNode*>(Node);
         auto WidgetNode = GetWidget(UEdNode);
         SGraphPanel::SNode::FNodeSet Filter;
-        WidgetNode->MoveTo(Rect.Min, Filter, true);
+        WidgetNode->MoveTo(CompatibleVector2(Rect.Min), Filter, true);
         if (UEdNode->IsA(UEdGraphNode_Comment::StaticClass()))
         {
             auto CommentNode = Cast<UEdGraphNode_Comment>(UEdNode);
