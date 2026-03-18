@@ -12,16 +12,24 @@ namespace UnrealBuildTool.Rules
 		public GraphFormatter(ReadOnlyTargetRules Target) : base(Target)
 		{
 			PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-            PublicIncludePaths.Add(ModuleDirectory);
+            PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+            PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+            PrivateIncludePaths.Add(ModuleDirectory);
 
-            PrivateDependencyModuleNames.AddRange(
+            PublicDependencyModuleNames.AddRange(
 				new string[]
 				{
 					"Core",
 					"CoreUObject",
+					"Engine",
+				}
+			);
+
+            PrivateDependencyModuleNames.AddRange(
+				new string[]
+				{
 					"ApplicationCore",
 					"InputCore",
-					"Engine",
 					"Kismet",
 					"UnrealEd",
 					"SlateCore",
