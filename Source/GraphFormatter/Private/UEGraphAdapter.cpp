@@ -83,8 +83,8 @@ TSet<UEdGraphNode*> UEGraphAdapter::GetDirectConnected(const TSet<UEdGraphNode*>
     {
         for (auto Pin : Node->Pins)
         {
-            if (Option == EFormatterPinDirection::In && Pin->Direction == EGPD_Input ||
-                Option == EFormatterPinDirection::Out && Pin->Direction == EGPD_Output ||
+            if ((Option == EFormatterPinDirection::In && Pin->Direction == EGPD_Input) ||
+                (Option == EFormatterPinDirection::Out && Pin->Direction == EGPD_Output) ||
                 Option == EFormatterPinDirection::InOut)
             {
                 for (auto LinkedPin : Pin->LinkedTo)
