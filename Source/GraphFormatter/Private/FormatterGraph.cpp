@@ -565,10 +565,16 @@ void FConnectedGraph::RemoveCycle()
     {
         for (auto Edge : MedianNode->InEdges)
         {
-            FFormatterPin* From = PinsMap[Edge->From->Guid];
-            FFormatterPin* To = PinsMap[Edge->To->Guid];
-            NodesMap[MedianNode->Guid]->Disconnect(From, To);
-            To->OwningNode->Disconnect(To, From);
+            if (PinsMap.Contains(Edge->From->Guid) && PinsMap.Contains(Edge->To->Guid))
+            {
+                FFormatterPin* From = PinsMap[Edge->From->Guid];
+                FFormatterPin* To = PinsMap[Edge->To->Guid];
+                if (NodesMap.Contains(MedianNode->Guid))
+                {
+                    NodesMap[MedianNode->Guid]->Disconnect(From, To);
+                }
+                To->OwningNode->Disconnect(To, From);
+            }
         }
         ClonedGraph->RemoveNode(MedianNode);
     }
