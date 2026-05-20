@@ -410,7 +410,20 @@ FFastAndSimplePositioningStrategy::FFastAndSimplePositioningStrategy(TArray<TArr
     , IsParameterGroup(IsParameterGroup)
 {
     const auto LayersBound = FFormatterGraph::CalculateLayersBound(InLayeredNodes, IsHorizontalDirection, IsParameterGroup);
-    FFormatterNode* FirstNode = InLayeredNodes[0][0];
+    FFormatterNode* FirstNode = nullptr;
+    for (auto& Layer : InLayeredNodes)
+    {
+        if (Layer.Num() > 0)
+        {
+            FirstNode = Layer[0];
+            break;
+        }
+    }
+    if (!FirstNode)
+    {
+        // Caller passed empty layers (or every layer is empty). Nothing to position.
+        return;
+    }
     const FVector2D OldPosition = FirstNode->GetPosition();
     Initialize();
     Sweep();
